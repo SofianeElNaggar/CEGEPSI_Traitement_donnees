@@ -12,7 +12,7 @@ IGNORER_COLONNES = {
     "DroneNorthing", "BatteryLevel", "Monotonic", "Date"
 }
 
-# 👉 Liste des mesures à ignorer pour une date donnée
+#    Liste des mesures à ignorer pour une date donnée
 #    Format : { "AAAA-MM-JJ" : {"NomExactColonne1", "NomExactColonne2", ...} }
 IGNORER_JOUR_VALEUR = {
     "2025-09-24": {"Dissolved Oxygen Concentration", "Dissolved Oxygen Saturation", "Oxygen Partial Pressure"},
@@ -107,10 +107,10 @@ def analyser_dossier_paliers(dossier):
     df_all = pd.concat(all_results, keys=[d["Date"].iloc[0] for d in all_results])
     df_all.index.names = ["Date", "Palier"]
 
-    # 👉 Moyenne par JOUR et Palier
+    # Moyenne par JOUR et Palier
     df_group = df_all.groupby(level=["Date", "Palier"]).mean()
 
-    # 👉 Application des exclusions spécifiques (jour + colonne)
+    # Application des exclusions spécifiques (jour + colonne)
     for date_str, cols in IGNORER_JOUR_VALEUR.items():
         try:
             jour = pd.to_datetime(date_str).normalize()
@@ -152,7 +152,7 @@ def tracer_evolution_paliers(df_group):
         plt.show()
 
 if __name__ == "__main__":
-    dossier = "../rapports_xlsx/Q40"  # <-- adapter
+    dossier = "../rapports_xlsx/Q40"
     df_group = analyser_dossier_paliers(dossier)
     print(df_group)
     tracer_evolution_paliers(df_group)
