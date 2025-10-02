@@ -119,7 +119,7 @@ def tracer_mesures_subplots(paliers_data):
 
 
 if __name__ == "__main__":
-    dossier = "../rapports_xlsx/Q40"  # <-- adapter
+    dossier = "../rapports/rapports_xlsx/Q41"
     paliers_data = collecter_mesures_par_palier(dossier)
     tracer_mesures_subplots(paliers_data)
 

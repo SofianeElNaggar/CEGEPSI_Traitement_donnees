@@ -19,9 +19,9 @@ IGNORER_JOUR_VALEUR = {
 }
 
 PALIERS = {
-    "1m":  (0, 2),
+    "1m":  (0.5, 2),
     "8m":  (6.5, 10),
-    "15m": (14, 17)
+    "15m": (13, 17)
 }
 # -------------------------------------------------
 
@@ -139,7 +139,7 @@ def tracer_evolution_paliers(df_group):
                 continue
             plt.plot(series.index, series.values, marker="o", linestyle="-", label=palier)
 
-        plt.title(f"Évolution de {col} par palier (moyenne journalière)")
+        plt.title(f"Évolution de {col} par palier")
         plt.xlabel("Date")
         plt.ylabel(col)
         plt.grid(True)
@@ -152,7 +152,7 @@ def tracer_evolution_paliers(df_group):
         plt.show()
 
 if __name__ == "__main__":
-    dossier = "../rapports_xlsx/Q40"
+    dossier = "../rapports/rapports_xlsx/Q41"
     df_group = analyser_dossier_paliers(dossier)
     print(df_group)
     tracer_evolution_paliers(df_group)
