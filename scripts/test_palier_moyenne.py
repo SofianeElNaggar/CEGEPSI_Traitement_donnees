@@ -152,7 +152,7 @@ def tracer_evolution_paliers(df_group):
         plt.show()
 
 if __name__ == "__main__":
-    dossier = "../rapports/rapports_xlsx/Q41"
+    dossier = "../rapports/rapports_xlsx/Q40"
     df_group = analyser_dossier_paliers(dossier)
     print(df_group)
     tracer_evolution_paliers(df_group)

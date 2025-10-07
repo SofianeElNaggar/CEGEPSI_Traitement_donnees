@@ -134,7 +134,7 @@ def tracer_evolution(df_res):
 
 if __name__ == "__main__":
     # ← change ce chemin vers ton dossier de rapports_xlsx
-    dossier = "../rapports/rapports_xlsx/Q41"
+    dossier = "../rapports/rapports_xlsx/Q40"
 
     df_res = analyser_dossier(dossier)
     print("Tableau des moyennes par date :")
