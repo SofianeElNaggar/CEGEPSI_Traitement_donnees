@@ -3,7 +3,7 @@ import glob
 import re
 import pandas as pd
 
-# Colonnes à ignorer (NE PAS inclure les colonnes Temperature ici si tu veux garder la "dernière" température)
+# Colonnes à ignorer
 IGNORER_COLONNES = {
     "DroneEasting", "Ts", "Depth", "Altitude", "Heading",
     "PilotLat", "PilotLon", "DroneLat", "DroneLon",
@@ -16,7 +16,7 @@ IGNORER_JOUR_VALEUR = {
     "2025-09-24": {"Dissolved Oxygen Concentration", "Dissolved Oxygen Saturation", "Oxygen Partial Pressure"},
 }
 
-# bornes en m des paliers (inchangées)
+# bornes en m des paliers
 PALIERS = {
     "1m":  (0.5, 2),
     "8m":  (6.5, 10),
@@ -42,7 +42,7 @@ def find_column(df: pd.DataFrame, target: str):
 
 def extraire_datetime(file_path):
     """
-    Lit la feuille 'Dive info' et récupère la datetime (même logique que précédemment).
+    Lit la feuille 'Dive info' et récupère la datetime
     """
     try:
         dive_info = pd.read_excel(file_path, sheet_name="Dive info", header=None)
@@ -97,7 +97,7 @@ def extraire_moyennes_par_palier(file_path):
 
 def _last_temperature_column(cols):
     """
-    Retourne le nom de la colonne 'temperature' à garder (celle avec le plus grand suffixe numérique).
+    Retourne le nom de la colonne 'temperature' à garder.
     Reconnaît: Temperature, Temperature_2, Temperature 3, Temperature-10, etc.
     Si aucune colonne temperature trouvée -> retourne None.
     """
@@ -152,7 +152,6 @@ def analyser_dossier_paliers(dossier):
         df_palier["Date"] = dt.normalize()
         df_palier["Profondeur"] = df_palier["Palier"].map(PALIERS_VALEUR)
 
-        # supprimer la colonne Palier si on veut; garder Profondeur comme demandé
         df_palier = df_palier.drop(columns=["Palier"])
 
         # ajouter lignes à la liste
@@ -164,7 +163,7 @@ def analyser_dossier_paliers(dossier):
     # concaténation de toutes les lignes
     df_long = pd.concat(all_rows, ignore_index=True, sort=False)
 
-    # --- NOUVEAU : si plusieurs mesures le même jour et même palier, faire la moyenne des mesures ---
+    # --- si plusieurs mesures le même jour et même palier, faire la moyenne des mesures ---
     # On calcule la moyenne des colonnes numériques; pour les colonnes non numériques on garde la première valeur rencontrée.
     cols_mesures = [c for c in df_long.columns if c not in ("Date", "Profondeur")]
     numeric_cols = df_long[cols_mesures].select_dtypes(include='number').columns.tolist()
@@ -176,14 +175,13 @@ def analyser_dossier_paliers(dossier):
     df_long = df_long.groupby(["Date", "Profondeur"], as_index=False).agg(agg_dict)
     # --- fin moyenne multiple même jour/palier ---
 
-    # Réordonner colonnes: Date, Profondeur, puis le reste trié
+    # Réordonner colonnes: Date, Profondeur, puis le reste
     other_cols = [c for c in df_long.columns if c not in ("Date", "Profondeur")]
-    other_cols_sorted = sorted(other_cols, key=lambda x: normalize_name(x))
-    df_long = df_long[["Date", "Profondeur"] + other_cols_sorted]
+    df_long = df_long[["Date", "Profondeur"] + other_cols]
 
-    # Appliquer suppression de colonnes à IGNORER (sur noms normalisés)
+    # Appliquer suppression de colonnes à IGNORER
     ignore_norm = {normalize_name(c) for c in IGNORER_COLONNES}
-    keep_cols = ["Date", "Profondeur"] + [c for c in other_cols_sorted if normalize_name(c) not in ignore_norm]
+    keep_cols = ["Date", "Profondeur"] + [c for c in other_cols if normalize_name(c) not in ignore_norm]
     df_long = df_long[keep_cols]
 
     # Appliquer IGNORER_JOUR_VALEUR: pour certaines dates, mettre NA pour certaines mesures
@@ -199,14 +197,13 @@ def analyser_dossier_paliers(dossier):
         except Exception as e:
             print(f"Erreur exclusion {date_str}: {e}")
 
-    # Optionnel: trier par date puis profondeur
     df_long = df_long.sort_values(["Date", "Profondeur"]).reset_index(drop=True)
 
     return df_long
 
 def sauvegarder_csv(df_long, output_path="resultats_paliers_long.csv"):
     """
-    Sauvegarde en CSV ; séparateur ';' pour compatibilitée locale.
+    Sauvegarde en CSV ; séparateur ';'.
     """
     df_to_save = df_long.copy()
     # Si Date est Timestamp, formater en date ISO (YYYY-MM-DD)
@@ -243,11 +240,10 @@ if __name__ == "__main__":
 
     # Ligne d'en-tête souhaitée (unités entre parenthèses)
     nouvelle_entete = (
-        "Date;Profondeur (m);Actual Conductivity (µS/cm);Chlorophyll A Fluorescence Intensity (RFU);"
-        "Crude Oil Fluorescence Intensity (RFU);Density of Water (g/cm³);Dissolved Oxygen Concentration (mg/L);"
-        "Dissolved Oxygen Saturation (%);ORP (mV);Oxygen Partial Pressure (Torr);pH;pH mV (mV);"
-        "Resistivity (Ω·m);Salinity (PSU);Specific Conductivity (µS/cm);Temperature (°C);"
-        "Total Dissolved Solids (ppt);Turbidity (NTU)"
+        "Date;Profondeur (m);Temperature (°C);Chlorophyll A (RFU);Dissolved Oxygen Concentration (mg/L);"
+        "Dissolved Oxygen Saturation (%);Oxygen Partial Pressure (Torr);Actual Conductivity (µS/cm);"
+        "Specific Conductivity (µS/cm);Salinity (PSU);Resistivity (Ω·m);Density of Water (g/cm³);"
+        "Total Dissolved Solids (ppt);pH;pH mV (mV);ORP (mV);Crude Oil (RFU);Turbidity (NTU)"
     )
 
     # Remplacer la première ligne du CSV par la nouvelle en-tête
