@@ -18,7 +18,7 @@ IGNORER_JOUR_VALEUR = {
 
 # bornes en m des paliers
 PALIERS = {
-    "1m":  (0.5, 2),
+    "1m":  (0, 2.5),
     "8m":  (6.5, 10),
     "15m": (13, 17)
 }
