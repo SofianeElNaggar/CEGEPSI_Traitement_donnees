@@ -233,7 +233,7 @@ def remplacer_premiere_ligne_csv(csv_path: str, nouvelle_premiere_ligne: str, en
         print(f"Erreur lors du remplacement de la première ligne de {csv_path} : {e}")
 
 if __name__ == "__main__":
-    dossier = "../rapports/rapports_xlsx/Q40"   # adapte si besoin
+    dossier = "../rapports/rapports_xlsx/Q40"
     df_long = analyser_dossier_paliers(dossier)
     output_csv = "../rapports/moyennes_paliers.csv"
     sauvegarder_csv(df_long, output_csv)
